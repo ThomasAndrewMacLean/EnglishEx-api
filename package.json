@@ -1,0 +1,27 @@
+{
+    "name": "englishex-api",
+    "version": "1.0.0",
+    "description": "Backend to the EnglishEx app",
+    "main": "index.js",
+    "scripts": {
+        "createAndDeploy": "claudia create --region eu-west-1 --api-module app --profile claudiaJS",
+        "updateAndDeploy": "claudia update --profile claudiaJS"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ThomasAndrewMacLean/EnglishEx-api.git"
+    },
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ThomasAndrewMacLean/EnglishEx-api/issues"
+    },
+    "homepage": "https://github.com/ThomasAndrewMacLean/EnglishEx-api#readme",
+    "devDependencies": {
+        "claudia": "^5.1.0"
+    },
+    "dependencies": {
+        "claudia-api-builder": "^4.1.1",
+        "superb": "^3.0.0"
+    }
+}

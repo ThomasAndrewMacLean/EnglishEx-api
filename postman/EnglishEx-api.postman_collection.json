@@ -1,0 +1,23 @@
+{
+	"info": {
+		"_postman_id": "0ab88d49-ce45-4648-bfb2-d0d493e68c8b",
+		"name": "EnglishEx-api",
+		"description": "list of requests to test englishEx api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "https://frg45et55h.execute-api.eu-west-1.amazonaws.com/latest/hello"
+				},
+				"description": "hello world test"
+			},
+			"response": []
+		}
+	]
+}
