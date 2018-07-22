@@ -10,10 +10,193 @@
 			"name": "ping",
 			"request": {
 				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"password\":\"thomas\"}"
+				},
+				"url": {
+					"raw": "https://xtdghj4hv0.execute-api.eu-west-1.amazonaws.com/latest/ping",
+					"protocol": "https",
+					"host": [
+						"xtdghj4hv0",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"latest",
+						"ping"
+					]
+				},
+				"description": "hello world test"
+			},
+			"response": []
+		},
+		{
+			"name": "greet",
+			"request": {
+				"method": "GET",
 				"header": [],
 				"body": {},
 				"url": {
-					"raw": "https://frg45et55h.execute-api.eu-west-1.amazonaws.com/latest/hello"
+					"raw": "https://xtdghj4hv0.execute-api.eu-west-1.amazonaws.com/latest/greet?name=Thomas",
+					"protocol": "https",
+					"host": [
+						"xtdghj4hv0",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"latest",
+						"greet"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Thomas"
+						}
+					]
+				},
+				"description": "greet"
+			},
+			"response": []
+		},
+		{
+			"name": "jwt",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t \"password\":\"thomasTest\",\n      \"email\":\"thomas.maclean@gmail.com\"\n}"
+				},
+				"url": {
+					"raw": "https://xtdghj4hv0.execute-api.eu-west-1.amazonaws.com/latest/test",
+					"protocol": "https",
+					"host": [
+						"xtdghj4hv0",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"latest",
+						"test"
+					]
+				},
+				"description": "greet"
+			},
+			"response": []
+		},
+		{
+			"name": "post user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"password\":\"thomas\",\n\t\"email\":\"thomas.maclean@gmail.com\"\n\t\n}"
+				},
+				"url": {
+					"raw": "https://xtdghj4hv0.execute-api.eu-west-1.amazonaws.com/latest/user",
+					"protocol": "https",
+					"host": [
+						"xtdghj4hv0",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"latest",
+						"user"
+					]
+				},
+				"description": "hello world test"
+			},
+			"response": []
+		},
+		{
+			"name": "get all user",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"password\":\"password\",\n\t\"email\":\"test.mail@gmail.com\"\n\t\n}"
+				},
+				"url": {
+					"raw": "https://xtdghj4hv0.execute-api.eu-west-1.amazonaws.com/latest/user",
+					"protocol": "https",
+					"host": [
+						"xtdghj4hv0",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"latest",
+						"user"
+					]
+				},
+				"description": "hello world test"
+			},
+			"response": []
+		},
+		{
+			"name": "delete user by id",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"5b54863880deb8888d908439\"\n}"
+				},
+				"url": {
+					"raw": "https://xtdghj4hv0.execute-api.eu-west-1.amazonaws.com/latest/deleteuser",
+					"protocol": "https",
+					"host": [
+						"xtdghj4hv0",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"latest",
+						"deleteuser"
+					]
 				},
 				"description": "hello world test"
 			},

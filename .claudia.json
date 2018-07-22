@@ -1,0 +1,11 @@
+{
+    "lambda": {
+        "role": "englishex-api-executor",
+        "name": "englishex-api",
+        "region": "eu-west-1"
+    },
+    "api": {
+        "id": "frg45et55h",
+        "module": "app"
+    }
+}

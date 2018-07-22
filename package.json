@@ -1,11 +1,14 @@
 {
-    "name": "englishex-api",
+    "name": "englishex---api",
     "version": "1.0.0",
     "description": "Backend to the EnglishEx app",
-    "main": "index.js",
+    "main": "app.js",
     "scripts": {
+        "dev": "nodemon app.js",
+        "expr": "claudia generate-serverless-express-proxy --region eu-west-1 --express-module app  --profile claudiaJS",
+        "depp": "claudia create --handler lambda.handler --deploy-proxy-api --region eu-west-1  --profile claudiaJS",
         "createAndDeploy": "claudia create --region eu-west-1 --api-module app --profile claudiaJS",
-        "updateAndDeploy": "claudia update --profile claudiaJS"
+        "upd": "claudia update --profile claudiaJS"
     },
     "repository": {
         "type": "git",
@@ -21,7 +24,18 @@
         "claudia": "^5.1.0"
     },
     "dependencies": {
+        "aws-serverless-express": "^3.2.0",
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.18.3",
         "claudia-api-builder": "^4.1.1",
-        "superb": "^3.0.0"
+        "cookie-parser": "^1.4.3",
+        "cors": "^2.8.4",
+        "dotenv": "^6.0.0",
+        "express": "^4.16.3",
+        "joi": "^13.4.0",
+        "jsonwebtoken": "^8.3.0",
+        "monk": "^6.0.6",
+        "superb": "^3.0.0",
+        "volleyball": "^1.5.1"
     }
 }
