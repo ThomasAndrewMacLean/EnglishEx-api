@@ -1,6 +1,6 @@
-// if (process.env.NODE_ENV !== 'development') {
-//     require('dotenv').load();
-// }
+//if (process.env.NODE_ENV !== 'production') {
+//require('dotenv').load();
+//}
 
 var superb = require('superb');
 //var ApiBuilder = require('claudia-api-builder'),
@@ -13,26 +13,88 @@ const logger = require('volleyball');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
+var randomString = require('random-string');
+const monk = require('monk');
 
-const db = require('monk')(`mongodb://dbReadWrite:${process.env.MONGO_PW}@cluster0-shard-00-00-vvrph.gcp.mongodb.net:27017,cluster0-shard-00-01-vvrph.gcp.mongodb.net:27017,cluster0-shard-00-02-vvrph.gcp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true`);
+let url = `mongodb://dbReadWrite:${
+    process.env.MONGO_PW
+}@cluster0-shard-00-00-vvrph.gcp.mongodb.net:27017,cluster0-shard-00-01-vvrph.gcp.mongodb.net:27017,cluster0-shard-00-02-vvrph.gcp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true`;
+//if (process.env.NODE_ENV !== 'production') {
+//     url = 'localhost:27017/englishex';
+//}
+const db = monk(url);
 let users = db.get('users');
 const cors = require('cors');
 
 const app = express();
+
 app.use(cors());
+
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//     next();
+// });
 
 app.use(cookieParser());
 app.use(logger);
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(
+    bodyParser.urlencoded({
+        extended: true
+    })
+);
+
+// const crypto = require('crypto');
+// const algorithm = 'aes-256-ctr';
+// const password = process.env.CRYPTO;
+
+// let encrypt = (text) => {
+//     var cipher = crypto.createCipher(algorithm, password);
+//     var crypted = cipher.update(text, 'utf8', 'hex');
+//     crypted += cipher.final('hex');
+//     return crypted;
+
+// };
+// let decrypt = (text) => {
+//     var decipher = crypto.createDecipher(algorithm, password);
+//     var dec = decipher.update(text, 'hex', 'utf8');
+//     dec += decipher.final('utf8');
+//     return dec;
+// };
+
+//let fs = require('fs');
+const fetch = require('node-fetch');
+const mailOptions = {
+    from: 'noreply', // sender address??
+    to: 'thomas.maclean@gmail.com', // list of receivers
+    subject: 'Subject of your email', // Subject line
+    html: '<p>Your html here test</p>' // plain text body
+};
+
+function sendMail(mail, linky) {
+    //let data = fs.readFileSync('./public/mail.html', 'utf8');
+    mailOptions.html = linky; // data.replace('{{{link}}}', linky);
+    mailOptions.to = mail;
+    console.log('sending mail ✉️');
+
+    var body = {
+        mailBody: mailOptions.html,
+        subject: 'Please confirm your emailadress with this code',
+        mail
+    };
+    fetch('https://p0dmber89l.execute-api.eu-west-1.amazonaws.com/dev/mail', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(json => console.log(json));
+}
 
 function getUserEmailFromToken(req, res, next) {
-
-    console.log(process.env.NODE_ENV);
-
-
     const bearerHeader = req.headers['authorization'];
     if (typeof bearerHeader !== 'undefined') {
         const bearer = bearerHeader.split(' ');
@@ -49,33 +111,58 @@ function getUserEmailFromToken(req, res, next) {
             if (email === 'thomas.maclean@gmail.com') {
                 req.admin = true;
             }
-            users.findOne({
-                email
-            }).then(user => {
-                if (user.confirmed) {
-                    console.log('USER IS CONFIRMED');
+            users
+                .findOne({
+                    email
+                })
+                .then(user => {
+                    if (user.confirmed) {
+                        console.log('USER IS CONFIRMED');
+                        req.isAdmin = user.isAdmin;
+                        req.token = email;
+                        next();
+                    } else {
+                        console.log('CONFIRMMMMM???');
 
-                    req.token = email;
-                    next();
-                } else {
-                    console.log('CONFIRMMMMM???');
+                        res.status(403).json({
+                            message: 'not yet confirmed!'
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.log('TIS NENERREUR');
 
-                    res.status(403).json({
-                        message: 'not yet confirmed!'
-                    });
-                }
-            }).catch(err => {
-                console.log('TIS NENERREUR');
-
-                console.log(err);
-                res.status(403).json(err);
-            });
+                    console.log(err);
+                    res.status(403).json(err);
+                });
         } catch (error) {
             console.log('eRROOOOOORRRRR');
             console.log(error);
             res.status(403).json(error);
         }
-        
+    } else {
+        res.status(403).json({
+            err: 'no authorization token!'
+        });
+    }
+}
+
+function getUserEmailFromTokenForConfirm(req, res, next) {
+    const bearerHeader = req.headers['authorization'];
+    if (typeof bearerHeader !== 'undefined') {
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+        console.log(bearerToken);
+        try {
+            let authData = jwt.verify(bearerToken, process.env.JWT_SECRET); //, (err, authData) => {
+            const email = authData.user.email;
+            req.token = email;
+            next();
+        } catch (error) {
+            console.log('eRROOOOOORRRRR');
+            console.log(error);
+            res.status(403).json(error);
+        }
     } else {
         res.status(403).json({
             err: 'no authorization token!'
@@ -91,30 +178,29 @@ app.get('/update', (req, res) => {
     res.status(200).json('hoojsdfjqdlsmkfjqklsdmj');
 });
 
-app.get('/greet', function (req, res) {
+app.get('/greet', function(req, res) {
     res.status(200).json(req.query.name + ' is NOT ' + superb.random());
 });
 
 app.post('/test', (req, res) => {
-    const {
-        password
-    } = req.body;
+    const { password } = req.body;
 
-    jwt.sign({
-        password: password
-    }, 'prockjlsqmfjqslmdkfjlmqksT', {
-        expiresIn: '300s'
-    }, (err, token) => {
-
-        res.status(200).json(token);
-    });
+    jwt.sign(
+        {
+            password: password
+        },
+        'prockjlsqmfjqslmdkfjlmqksT',
+        {
+            expiresIn: '300s'
+        },
+        (err, token) => {
+            res.status(200).json(token);
+        }
+    );
 });
 
 app.post('/user', (req, res) => {
-    const {
-        email,
-        password
-    } = req.body;
+    const { email, password } = req.body;
 
     const newUser = {
         email,
@@ -129,123 +215,227 @@ app.post('/user', (req, res) => {
 
 app.get('/user', (req, res) => {
     users.find().then(u => {
+        u.forEach(z => (z.password = null));
         res.status(200).json(u);
     });
 });
 
 app.post('/deleteuser', (req, res) => {
-    const {
-        id
-    } = req.body;
+    const { id } = req.body;
 
-    users.remove({
-        _id: id
-    }).then(u => {
-        res.status(200).json(u);
-    });
+    users
+        .remove({
+            _id: id
+        })
+        .then(u => {
+            res.status(200).json(u);
+        });
 });
 
 app.post('/signup', (req, res) => {
-    const {
-        password,
-        email
-    } = req.body;
+    console.log(process.env.JWT_SECRET);
+
+    const { password, email } = req.body;
     console.log(email + ' start signup');
 
-    users.findOne({
-        email
-    }).then(user => {
-        if (user) {
-            res.status(403).json({
-                message: 'allready a user'
-            });
-        } else {
-            bcrypt.hash(password, saltRounds, function (err, hash) {
-                const newUser = {
-                    email,
-                    password: hash,
-                    confirmed: false
-                };
-                console.log(newUser);
+    users
+        .findOne({
+            email
+        })
+        .then(user => {
+            if (user) {
+                res.status(403).json({
+                    message: 'allready a user'
+                });
+            } else {
+                bcrypt.hash(password, saltRounds, function(err, hash) {
+                    const confirmString = randomString({
+                        length: 6,
+                        numeric: true,
+                        letters: true,
+                        special: true,
+                        exclude: ['a', 'b', '1']
+                    });
 
-                users.insert(newUser).then(user => {
-                    //sendMail(email, req.protocol + '://' + req.get('host') + '/confirm/' + encrypt(email));
-                    jwt.sign({
-                        user
-                    }, process.env.JWT_SECRET, {
-                        expiresIn: '300s'
-                    }, (err, token) => {
-                        res.status(200).json({
-                            token
-                        });
+                    const newUser = {
+                        email,
+                        password: hash,
+                        confirmed: false,
+                        isAdmin: false,
+                        confirmString
+                    };
+
+                    console.log(newUser);
+
+                    users.insert(newUser).then(user => {
+                        sendMail(email, confirmString);
+                        jwt.sign(
+                            {
+                                user
+                            },
+                            process.env.JWT_SECRET,
+                            {
+                                expiresIn: '3000s'
+                            },
+                            (err, token) => {
+                                res.status(200).json({
+                                    token
+                                });
+                            }
+                        );
                     });
                 });
+            }
+        })
+        .catch(err => {
+            res.status(200).json({
+                err
             });
-        }
-    }).catch(err => {
-        res.status(200).json({
-            err
         });
-    });
 });
 
 app.post('/login', (req, res) => {
-    const {
-        password,
-        email
-    } = req.body;
-    users.findOne({
-        email
-    }).then(user => {
-        bcrypt.compare(password, user.password, function (err, resp) {
-            if (resp) {
-                jwt.sign({
-                    user
-                }, process.env.JWT_SECRET, {
-                    expiresIn: '3000s'
-                }, (err, token) => {
-                    res.status(200).json({
-                        token
+    console.log('start');
+
+    const { password, email } = req.body;
+    users
+        .findOne({
+            email
+        })
+        .then(user => {
+            console.log(user);
+
+            bcrypt.compare(password, user.password, function(err, resp) {
+                if (resp) {
+                    jwt.sign(
+                        {
+                            user
+                        },
+                        process.env.JWT_SECRET,
+                        {
+                            expiresIn: '3000s'
+                        },
+                        (err, token) => {
+                            res.status(200).json({
+                                token,
+                                isAdmin: user.isAdmin
+                            });
+                        }
+                    );
+                } else {
+                    res.status(403).json({
+                        message: 'wrong password'
                     });
-                });
+                }
+            });
+        })
+        .catch(() =>
+            res.status(403).json({
+                message: 'wrong user'
+            })
+        );
+});
+
+app.post('/confirm', getUserEmailFromTokenForConfirm, (req, res) => {
+    const code = req.body.code;
+    const email = req.token;
+
+    users
+        .findOne({
+            email
+        })
+        .then(user => {
+            if (user.confirmString === code) {
+                users
+                    .update(
+                        {
+                            email: email
+                        },
+                        {
+                            $set: {
+                                confirmed: true
+                            }
+                        }
+                    )
+                    .then(() =>
+                        res.status(200).json({
+                            email,
+                            isAdmin: user.isAdmin
+                        })
+                    );
             } else {
-                res.status(403).json({
-                    message: 'wrong password'
-                });
+                users
+                    .remove({
+                        email: email
+                    })
+                    .then(() => {
+                        res.status(403).json({
+                            message: 'Try to login again'
+                        });
+                    });
             }
         });
-    }).catch(() => res.status(403).json({
-        message: 'wrong user'
-    }));
-
-
 });
 
-app.get('/confirm/:email', (req, res) => {
-    var email = req.params.email;
-
-    users.update({
-        email: email
-    }, {
-        $set: {
-            confirmed: true
-        }
-    }).then(() => {
-        res.status(200).json('confirmed');
-    }).catch(err => res.status(403).json(err));
+app.get('/setAdmin', (req, res) => {
+    users
+        .update(
+            {
+                email: 'alistair.maclean@telenet.be'
+            },
+            {
+                $set: {
+                    isAdmin: true
+                }
+            }
+        )
+        .then(x => res.status(200).json(x));
 });
 
-app.post('/upload', getUserEmailFromToken, (req, res) => {
-    let userTodos = db.get(req.token);
-    userTodos.insert({
-        test: req.body.test,
-        done: false
-    }).then(r => res.status(200).json(r));
-});
-
-app.get('/exercises', (req, res) => {
+app.post('/addexercise', (req, res) => {
     let exercises = db.get('exercises');
-    exercises.find({}).then(r =>{
+    exercises.insert(req.body.exercise).then(r => res.status(200).json(r));
+});
+
+app.post('/addcourse', (req, res) => {
+    let courses = db.get('courses');
+    courses.insert(req.body.course).then(r => res.status(200).json(r));
+});
+
+app.post('/editcourse', (req, res) => {
+    let courses = db.get('courses');
+    let c = req.body.course;
+    courses
+        .update(
+            {
+                _id: c._id
+            },
+            req.body.course
+        )
+        .then(r => res.status(200).json(r));
+});
+
+app.get('/courses', getUserEmailFromToken, (req, res) => {
+    let exercises = db.get('courses');
+    exercises.find({}).then(r => {
+        res.status(200).json(r);
+    });
+});
+
+app.get('/course/:id', getUserEmailFromToken, (req, res) => {
+    let exercises = db.get('courses');
+    exercises
+        .find({
+            _id: req.params.id
+        })
+        .then(r => {
+            res.status(200).json(r);
+        });
+});
+
+app.get('/exercises', getUserEmailFromToken, (req, res) => {
+    let exercises = db.get('exercises');
+    exercises.find({}).then(r => {
         console.log(r);
         //TODO: map only titles and id's
         //TODO: ? getUserEmailFromToken and get his scores ?
@@ -256,10 +446,20 @@ app.get('/exercises', (req, res) => {
 app.get('/exercises/:id', getUserEmailFromToken, (req, res) => {
     const id = req.params.id;
     let exercises = db.get('exercises');
-    exercises.find({
-        _id:   id
-    }).then(r => res.status(200).json(r));
+    exercises
+        .find({
+            _id: id
+        })
+        .then(r => {
+            console.log(r);
+            let temp = r[0];
+        
+            return res.status(200).json([temp]);
+        });
 });
 
+//if (process.env.NODE_ENV !== 'production') {
 //app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
+//}
+
 module.exports = app;

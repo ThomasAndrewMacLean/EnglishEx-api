@@ -36,6 +36,8 @@
         "joi": "^13.4.0",
         "jsonwebtoken": "^8.3.0",
         "monk": "^6.0.6",
+        "node-fetch": "^2.2.0",
+        "random-string": "^0.2.0",
         "superb": "^3.0.0",
         "volleyball": "^1.5.1"
     }
