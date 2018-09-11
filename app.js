@@ -453,7 +453,16 @@ app.get('/exercises/:id', getUserEmailFromToken, (req, res) => {
         .then(r => {
             console.log(r);
             let temp = r[0];
-        
+            if (temp.type === 'A') {
+                const len = temp.exercise.length;
+                
+                temp.exercise.forEach(ex => {
+                    let x = Math.floor(Math.random() * len);
+                    let tem = temp.exercise[x].partB;
+                    temp.exercise[x].partB = ex.partB;
+                    ex.partB = tem;
+                });
+            }
             return res.status(200).json([temp]);
         });
 });
