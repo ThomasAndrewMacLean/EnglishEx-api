@@ -213,12 +213,12 @@ app.post('/user', (req, res) => {
     });
 });
 
-app.get('/user', (req, res) => {
-    users.find().then(u => {
-        u.forEach(z => (z.password = null));
-        res.status(200).json(u);
-    });
-});
+// app.get('/user', (req, res) => {
+//     users.find().then(u => {
+//         u.forEach(z => (z.password = null));
+//         res.status(200).json(u);
+//     });
+// });
 
 app.post('/deleteuser', (req, res) => {
     const { id } = req.body;
@@ -274,9 +274,6 @@ app.post('/signup', (req, res) => {
                                 user
                             },
                             process.env.JWT_SECRET,
-                            {
-                                expiresIn: '3000s'
-                            },
                             (err, token) => {
                                 res.status(200).json({
                                     token
@@ -312,9 +309,6 @@ app.post('/login', (req, res) => {
                             user
                         },
                         process.env.JWT_SECRET,
-                        {
-                            expiresIn: '3000s'
-                        },
                         (err, token) => {
                             res.status(200).json({
                                 token,
@@ -394,7 +388,29 @@ app.get('/setAdmin', (req, res) => {
 
 app.post('/addexercise', (req, res) => {
     let exercises = db.get('exercises');
-    exercises.insert(req.body.exercise).then(r => res.status(200).json(r));
+    const exercise = req.body.exercise;
+    if (exercise.id) {
+        if (exercise.delete) {
+            exercises
+                .update({ _id: exercise.id }, { delete: exercise.delete })
+                .then(r => res.status(200).json(r));
+        }
+        if (exercise.type === 'A') {
+            exercises
+                .update(
+                    { _id: exercise.id },
+                    {
+                        title: exercise.title,
+                        type: exercise.type,
+                        exercise: exercise.exercise,
+                        delete: exercise.delete
+                    }
+                )
+                .then(r => res.status(200).json(r));
+        }
+    } else {
+        exercises.insert(exercise).then(r => res.status(200).json(r));
+    }
 });
 
 app.post('/addcourse', (req, res) => {
