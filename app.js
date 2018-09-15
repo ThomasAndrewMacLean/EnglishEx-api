@@ -443,6 +443,30 @@ app.get('/exercises', getUserEmailFromToken, (req, res) => {
     });
 });
 
+app.post('/saveEx', getUserEmailFromToken, (req, res) => {
+    const id = req.body.exId;
+    const data = req.body.data;
+    const total = data.length;
+    let score = 0;
+    let exercises = db.get('exercises');
+    exercises
+        .find({
+            _id: id
+        })
+        .then(r => {
+            console.log(r);
+            let temp = r[0];
+            if (temp.type === 'A') {
+                temp.exercise.forEach((ex, i) => {
+                    if (ex.partB === data[i]) {
+                        score++;
+                    }
+                });
+            }
+            return res.status(200).json(`${score}/${total}`);
+        });
+});
+
 app.get('/exercises/:id', getUserEmailFromToken, (req, res) => {
     const id = req.params.id;
     let exercises = db.get('exercises');
@@ -455,7 +479,7 @@ app.get('/exercises/:id', getUserEmailFromToken, (req, res) => {
             let temp = r[0];
             if (temp.type === 'A') {
                 const len = temp.exercise.length;
-                
+
                 temp.exercise.forEach(ex => {
                     let x = Math.floor(Math.random() * len);
                     let tem = temp.exercise[x].partB;
