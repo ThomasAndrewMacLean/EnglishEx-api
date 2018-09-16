@@ -199,6 +199,16 @@ app.post('/test', (req, res) => {
     );
 });
 
+app.get('/user',getUserEmailFromToken, (req, res) => {
+    if(!req.isAdmin){
+        res.status(203).json({message:'only admin'});
+    }
+    users.find().then(u => {
+        u.forEach(z => (z.password = null));
+        res.status(200).json(u);
+    });
+});
+
 app.post('/user', (req, res) => {
     const { email, password } = req.body;
 
@@ -213,14 +223,17 @@ app.post('/user', (req, res) => {
     });
 });
 
-// app.get('/user', (req, res) => {
-//     users.find().then(u => {
-//         u.forEach(z => (z.password = null));
-//         res.status(200).json(u);
-//     });
-// });
+app.get('/getNameFromToken', getUserEmailFromToken, (req, res) => {
+    res.json({
+        email: req.token,
+        isAdmin: req.isAdmin
+    });
+});
 
-app.post('/deleteuser', (req, res) => {
+app.post('/deleteuser',getUserEmailFromToken, (req, res) => {
+    if(!req.isAdmin){
+        res.status(203).json({message: 'only admin'});
+    }
     const { id } = req.body;
 
     users
@@ -386,7 +399,10 @@ app.get('/setAdmin', (req, res) => {
         .then(x => res.status(200).json(x));
 });
 
-app.post('/addexercise', (req, res) => {
+app.post('/addexercise',getUserEmailFromToken, (req, res) => {
+    if(!req.isAdmin){
+        res.status(203).json({message: 'only admin'});
+    }
     let exercises = db.get('exercises');
     const exercise = req.body.exercise;
     if (exercise.id) {
@@ -413,12 +429,18 @@ app.post('/addexercise', (req, res) => {
     }
 });
 
-app.post('/addcourse', (req, res) => {
+app.post('/addcourse',getUserEmailFromToken, (req, res) => {
+    if(!req.isAdmin){
+        res.status(203).json({message: 'only admin'});
+    }
     let courses = db.get('courses');
     courses.insert(req.body.course).then(r => res.status(200).json(r));
 });
 
-app.post('/editcourse', (req, res) => {
+app.post('/editcourse',getUserEmailFromToken, (req, res) => {
+    if(!req.isAdmin){
+        res.status(203).json({message: 'only admin'});
+    }
     let courses = db.get('courses');
     let c = req.body.course;
     courses
@@ -437,6 +459,18 @@ app.get('/courses', getUserEmailFromToken, (req, res) => {
         res.status(200).json(r);
     });
 });
+
+app.get('/getMyPoints', getUserEmailFromToken, (req, res) => {
+    const user = req.token;
+    let points = db.get(user);
+    points.find({}).then(r => res.status(200).json(r));
+});
+
+// app.get('/getMyPointsTest', getUserEmailFromToken, (req, res) => {
+//     const user = req.token;
+//     let points = db.get(user + '/points');
+//     points.find({}).then(r => res.status(200).json(r));
+// });
 
 app.get('/course/:id', getUserEmailFromToken, (req, res) => {
     let exercises = db.get('courses');
@@ -462,6 +496,7 @@ app.get('/exercises', getUserEmailFromToken, (req, res) => {
 app.post('/saveEx', getUserEmailFromToken, (req, res) => {
     const id = req.body.exId;
     const data = req.body.data;
+    const user = req.token;
     const total = data.length;
     let score = 0;
     let exercises = db.get('exercises');
@@ -479,6 +514,13 @@ app.post('/saveEx', getUserEmailFromToken, (req, res) => {
                     }
                 });
             }
+            let userData = db.get(user);
+            //let scores = userData.get('scores');
+            userData.insert({
+                exId: id,
+                score,
+                total
+            });
             return res.status(200).json(`${score}/${total}`);
         });
 });
