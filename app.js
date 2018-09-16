@@ -199,9 +199,9 @@ app.post('/test', (req, res) => {
     );
 });
 
-app.get('/user',getUserEmailFromToken, (req, res) => {
-    if(!req.isAdmin){
-        res.status(203).json({message:'only admin'});
+app.get('/user', getUserEmailFromToken, (req, res) => {
+    if (!req.isAdmin) {
+        res.status(203).json({ message: 'only admin' });
     }
     users.find().then(u => {
         u.forEach(z => (z.password = null));
@@ -230,9 +230,9 @@ app.get('/getNameFromToken', getUserEmailFromToken, (req, res) => {
     });
 });
 
-app.post('/deleteuser',getUserEmailFromToken, (req, res) => {
-    if(!req.isAdmin){
-        res.status(203).json({message: 'only admin'});
+app.post('/deleteuser', getUserEmailFromToken, (req, res) => {
+    if (!req.isAdmin) {
+        res.status(203).json({ message: 'only admin' });
     }
     const { id } = req.body;
 
@@ -399,9 +399,9 @@ app.get('/setAdmin', (req, res) => {
         .then(x => res.status(200).json(x));
 });
 
-app.post('/addexercise',getUserEmailFromToken, (req, res) => {
-    if(!req.isAdmin){
-        res.status(203).json({message: 'only admin'});
+app.post('/addexercise', getUserEmailFromToken, (req, res) => {
+    if (!req.isAdmin) {
+        res.status(203).json({ message: 'only admin' });
     }
     let exercises = db.get('exercises');
     const exercise = req.body.exercise;
@@ -429,17 +429,17 @@ app.post('/addexercise',getUserEmailFromToken, (req, res) => {
     }
 });
 
-app.post('/addcourse',getUserEmailFromToken, (req, res) => {
-    if(!req.isAdmin){
-        res.status(203).json({message: 'only admin'});
+app.post('/addcourse', getUserEmailFromToken, (req, res) => {
+    if (!req.isAdmin) {
+        res.status(203).json({ message: 'only admin' });
     }
     let courses = db.get('courses');
     courses.insert(req.body.course).then(r => res.status(200).json(r));
 });
 
-app.post('/editcourse',getUserEmailFromToken, (req, res) => {
-    if(!req.isAdmin){
-        res.status(203).json({message: 'only admin'});
+app.post('/editcourse', getUserEmailFromToken, (req, res) => {
+    if (!req.isAdmin) {
+        res.status(203).json({ message: 'only admin' });
     }
     let courses = db.get('courses');
     let c = req.body.course;
