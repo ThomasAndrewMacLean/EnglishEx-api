@@ -27,7 +27,8 @@ let users = db.get('users');
 const cors = require('cors');
 
 var Raven = require('raven');
-if (process.env.NODE_ENV !== 'production') {
+
+if (process.env.NODE_ENV === 'production') {
     Raven.config(
         'https://ea53bfea099a4322b4591b6cc07ef6c8@sentry.io/1282650'
     ).install();
@@ -112,12 +113,13 @@ function getUserEmailFromToken(req, res, next) {
             console.log(authData);
 
             const email = authData.user.email;
-            console.log('EEEEemail');
             console.log(email);
 
             //SETTING RAVEN SENTRY EMAIL CONTEXT FOR ERROR TRACKING
-            Raven.setUserContext({
-                email: email
+            Raven.setContext({
+                user: {
+                    email: email
+                }
             });
 
             if (email === 'thomas.maclean@gmail.com') {
@@ -129,32 +131,33 @@ function getUserEmailFromToken(req, res, next) {
                 })
                 .then(user => {
                     if (user.confirmed) {
-                        console.log('USER IS CONFIRMED');
                         req.isAdmin = user.isAdmin;
                         req.token = email;
                         next();
                     } else {
-                        console.log('CONFIRMMMMM???');
-
                         res.status(403).json({
                             message: 'not yet confirmed!'
                         });
                     }
                 })
                 .catch(err => {
-                    console.log('TIS NENERREUR');
-
                     console.log(err);
-                    res.status(403).json(err);
+                    Raven.captureException(err);
+                    res.status(403).json({
+                        message: 'something went wrong'
+                    });
                 });
         } catch (error) {
-            console.log('eRROOOOOORRRRR');
             console.log(error);
-            res.status(403).json(error);
+            Raven.captureException(error);
+
+            res.status(403).json({
+                message: 'something went wrong'
+            });
         }
     } else {
         res.status(403).json({
-            err: 'no authorization token!'
+            message: 'no authorization token!'
         });
     }
 }
@@ -164,20 +167,22 @@ function getUserEmailFromTokenForConfirm(req, res, next) {
     if (typeof bearerHeader !== 'undefined') {
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];
-        console.log(bearerToken);
         try {
             let authData = jwt.verify(bearerToken, process.env.JWT_SECRET); //, (err, authData) => {
             const email = authData.user.email;
             req.token = email;
             next();
         } catch (error) {
-            console.log('eRROOOOOORRRRR');
             console.log(error);
-            res.status(403).json(error);
+            Raven.captureException(error);
+
+            res.status(403).json({
+                message: 'something went wrong'
+            });
         }
     } else {
         res.status(403).json({
-            err: 'no authorization token!'
+            message: 'no authorization token!'
         });
     }
 }
@@ -186,8 +191,8 @@ app.get('/ping', (req, res) => {
     res.status(200).json('pong');
 });
 
-app.get('/update', (req, res) => {
-    res.status(200).json('hoojsdfjqdlsmkfjqklsdmj');
+app.get('/env', (req, res) => {
+    res.status(200).json(process.env.NODE_ENV);
 });
 
 app.get('/greet', function(req, res) {

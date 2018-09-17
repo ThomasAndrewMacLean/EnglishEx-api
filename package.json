@@ -8,7 +8,8 @@
         "expr": "claudia generate-serverless-express-proxy --region eu-west-1 --express-module app  --profile claudiaJS",
         "depp": "claudia create --handler lambda.handler --deploy-proxy-api --region eu-west-1  --profile claudiaJS",
         "createAndDeploy": "claudia create --region eu-west-1 --api-module app --profile claudiaJS",
-        "upd": "claudia update --profile claudiaJS"
+        "upd": "claudia update --set-env-from-json .env.json --profile claudiaJS",
+        "log": "smoketail -f /aws/lambda/englishex---api -r eu-west-1"
     },
     "repository": {
         "type": "git",
@@ -22,7 +23,8 @@
     "homepage": "https://github.com/ThomasAndrewMacLean/EnglishEx-api#readme",
     "devDependencies": {
         "claudia": "^5.1.0",
-        "eslint": "^5.2.0"
+        "eslint": "^5.2.0",
+        "smoketail": "^0.1.1"
     },
     "dependencies": {
         "aws-serverless-express": "^3.2.0",
