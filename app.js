@@ -425,7 +425,10 @@ app.post('/addexercise', getUserEmailFromToken, (req, res) => {
     if (exercise.id) {
         if (exercise.delete) {
             exercises
-                .update({ _id: exercise.id }, { delete: exercise.delete })
+                .update(
+                    { _id: exercise.id },
+                    { $set: { delete: exercise.delete } }
+                )
                 .then(r => res.status(200).json(r));
         }
         if (exercise.type === 'A') {
