@@ -115,6 +115,11 @@ function getUserEmailFromToken(req, res, next) {
             console.log('EEEEemail');
             console.log(email);
 
+            //SETTING RAVEN SENTRY EMAIL CONTEXT FOR ERROR TRACKING
+            Raven.setUserContext({
+                email: email
+            });
+
             if (email === 'thomas.maclean@gmail.com') {
                 req.admin = true;
             }
