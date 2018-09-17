@@ -26,6 +26,13 @@ const db = monk(url);
 let users = db.get('users');
 const cors = require('cors');
 
+var Raven = require('raven');
+if (process.env.NODE_ENV !== 'production') {
+    Raven.config(
+        'https://ea53bfea099a4322b4591b6cc07ef6c8@sentry.io/1282650'
+    ).install();
+}
+
 const app = express();
 
 app.use(cors());
