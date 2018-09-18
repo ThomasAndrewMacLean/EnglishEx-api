@@ -26,13 +26,18 @@ const db = monk(url);
 let users = db.get('users');
 const cors = require('cors');
 
-var Raven = require('raven');
+//var Raven = require('raven');
 
-if (process.env.NODE_ENV === 'production') {
-    Raven.config(
-        'https://ea53bfea099a4322b4591b6cc07ef6c8@sentry.io/1282650'
-    ).install();
-}
+// var iopipe = require('@iopipe/iopipe')({
+//     token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNTA3OGYzNy1kMDM1LTQ3MzUtODMwZC1mNDE2NmRjYzUxNDQiLCJqdGkiOiJjNWMzM2VjMi04Y2Y0LTRhZGYtOTFjZC1lMzRlNDc1OTFjMzQiLCJpYXQiOjE1MzcyMjc1NjgsImlzcyI6Imh0dHBzOi8vaW9waXBlLmNvbSIsImF1ZCI6Imh0dHBzOi8vaW9waXBlLmNvbSxodHRwczovL21ldHJpY3MtYXBpLmlvcGlwZS5jb20vZXZlbnQvLGh0dHBzOi8vZ3JhcGhxbC5pb3BpcGUuY29tIn0.aIbp2wx9Axs5DTxgDuAWk6l3AyxCZRUit7idAK87MhU'
+//   });
+
+// Raven.config(
+//     'https://ea53bfea099a4322b4591b6cc07ef6c8@sentry.io/1282650'
+// ).install();
+
+// if (process.env.NODE_ENV === 'production') {
+// }
 
 const app = express();
 
@@ -116,11 +121,13 @@ function getUserEmailFromToken(req, res, next) {
             console.log(email);
 
             //SETTING RAVEN SENTRY EMAIL CONTEXT FOR ERROR TRACKING
-            Raven.setContext({
-                user: {
-                    email: email
-                }
-            });
+            // Raven.setContext({
+            //     user: {
+            //         email: email
+            //     }
+            // });
+
+            //Raven.captureException('Test USER');
 
             if (email === 'thomas.maclean@gmail.com') {
                 req.admin = true;
@@ -142,14 +149,14 @@ function getUserEmailFromToken(req, res, next) {
                 })
                 .catch(err => {
                     console.log(err);
-                    Raven.captureException(err);
+                    //Raven.captureException(err);
                     res.status(403).json({
                         message: 'something went wrong'
                     });
                 });
         } catch (error) {
             console.log(error);
-            Raven.captureException(error);
+            //Raven.captureException(error);
 
             res.status(403).json({
                 message: 'something went wrong'
@@ -174,7 +181,7 @@ function getUserEmailFromTokenForConfirm(req, res, next) {
             next();
         } catch (error) {
             console.log(error);
-            Raven.captureException(error);
+            //Raven.captureException(error);
 
             res.status(403).json({
                 message: 'something went wrong'
@@ -192,7 +199,22 @@ app.get('/ping', (req, res) => {
 });
 
 app.get('/env', (req, res) => {
-    res.status(200).json(process.env.NODE_ENV);
+    // Raven.config(
+    //     'https://ea53bfea099a4322b4591b6cc07ef6c8@sentry.io/1282650'
+    // ).install();
+    // Raven.setContext({
+    //     user: {
+    //         id: 123098
+    //     }
+    // });
+    // Raven.captureException('Test USER gettest test');
+
+    try {
+        throw new Error({ message: 'it goes wrong man!' });
+    } catch (e) {
+        // Raven.captureException(e);
+    }
+    res.status(200).json(0990);
 });
 
 app.get('/greet', function(req, res) {
@@ -322,8 +344,7 @@ app.post('/signup', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    console.log('start');
-
+    // Raven.captureException('login');
     const { password, email } = req.body;
     users
         .findOne({
@@ -474,13 +495,19 @@ app.post('/editcourse', getUserEmailFromToken, (req, res) => {
 });
 
 app.get('/courses', getUserEmailFromToken, (req, res) => {
-    let exercises = db.get('courses');
-    exercises.find({}).then(r => {
-        res.status(200).json(r);
-    });
+    try {
+        let exercises = db.get('courses');
+        exercises.find({}).then(r => {
+            // Raven.captureException('Test this route 🤼‍♀️');
+            res.status(200).json(r);
+        });
+    } catch (error) {
+        // Raven.captureException(error);
+    }
 });
 
 app.get('/getMyPoints', getUserEmailFromToken, (req, res) => {
+    //Raven.captureException('GETPOINTS');
     const user = req.token;
     let points = db.get(user);
     points.find({}).then(r => res.status(200).json(r));
