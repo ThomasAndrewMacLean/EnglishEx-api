@@ -449,16 +449,21 @@ app.post('/addexercise', getUserEmailFromToken, (req, res) => {
             let courses = db.get('courses');
             courses.find({}).then(allCourses => {
                 allCourses.forEach(course => {
-                    courses.update(
-                        {_id: course._id},
-                        {
-                            $set: {
-                                exercises: course.exercises.filter(
-                                    e => e.id !== exercise.id
-                                )
+                    if (
+                        course.exercises.filter(e => e.id === exercise.id)
+                            .length > 0
+                    ) {
+                        courses.update(
+                            { _id: course._id },
+                            {
+                                $set: {
+                                    exercises: course.exercises.filter(
+                                        e => e.id !== exercise.id
+                                    )
+                                }
                             }
-                        }
-                    );
+                        );
+                    }
                 });
             });
 
