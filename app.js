@@ -445,6 +445,23 @@ app.post('/addexercise', getUserEmailFromToken, (req, res) => {
     const exercise = req.body.exercise;
     if (exercise.id) {
         if (exercise.delete) {
+            //Delete all the exercise in the courses
+            let courses = db.get('courses');
+            courses.find({}).then(allCourses => {
+                allCourses.forEach(course => {
+                    courses.update(
+                        {_id: course._id},
+                        {
+                            $set: {
+                                exercises: course.exercises.filter(
+                                    e => e.id !== exercise.id
+                                )
+                            }
+                        }
+                    );
+                });
+            });
+
             exercises
                 .update(
                     { _id: exercise.id },
