@@ -516,14 +516,59 @@ app.post('/editcourse', getUserEmailFromToken, (req, res) => {
         .then(r => res.status(200).json(r));
 });
 
+app.get('/getLabels', (req, res) => {
+    try {
+        let labels = db.get('labels');
+        labels.find({}).then(r => {
+            res.status(200).json(r);
+        });
+    } catch (error) {
+        res.status(500).json(error);
+    }
+});
+
+app.post('/updateLabel', getUserEmailFromToken, (req, res) => {
+    if (!req.isAdmin) {
+        res.status(203).json({ message: 'only admin' });
+    }
+    try {
+        let label = req.body.label;
+        let labels = db.get('labels');
+        labels
+            .update(
+                {
+                    _id: label._id
+                },
+                label
+            )
+            .then(r => res.status(200).json(r));
+    } catch (error) {
+        res.status(500).json(error);
+    }
+});
+
+app.post('/newLabel',getUserEmailFromToken, (req, res) => {
+    if (!req.isAdmin) {
+        res.status(203).json({ message: 'only admin' });
+    }
+    try {
+        let label = req.body.label;
+        let labels = db.get('labels');
+        labels.insert(label).then(r => res.status(200).json(r));
+    } catch (error) {
+        res.status(500).json(error);
+    }
+});
+
 app.get('/courses', getUserEmailFromToken, (req, res) => {
     try {
         let exercises = db.get('courses');
         exercises.find({}).then(r => {
-            // Raven.captureException('Test this route 🤼‍♀️');
             res.status(200).json(r);
         });
     } catch (error) {
+        res.status(500).json(error);
+
         // Raven.captureException(error);
     }
 });
