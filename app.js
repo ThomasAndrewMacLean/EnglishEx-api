@@ -628,6 +628,13 @@ app.post('/saveEx', getUserEmailFromToken, (req, res) => {
                     }
                 });
             }
+            if (temp.type === 'B') {
+                temp.exercise.forEach((ex, i) => {
+                    if (ex.partA.split('[[')[1].split(']]')[0] === data[i].ans) {
+                        score++;
+                    }
+                });
+            }
             let userData = db.get(user);
             //let scores = userData.get('scores');
             userData.insert({
