@@ -547,7 +547,7 @@ app.post('/updateLabel', getUserEmailFromToken, (req, res) => {
     }
 });
 
-app.post('/newLabel',getUserEmailFromToken, (req, res) => {
+app.post('/newLabel', getUserEmailFromToken, (req, res) => {
     if (!req.isAdmin) {
         res.status(203).json({ message: 'only admin' });
     }
@@ -630,7 +630,9 @@ app.post('/saveEx', getUserEmailFromToken, (req, res) => {
             }
             if (temp.type === 'B') {
                 temp.exercise.forEach((ex, i) => {
-                    if (ex.partA.split('[[')[1].split(']]')[0] === data[i].ans) {
+                    if (
+                        ex.partA.split('[[')[1].split(']]')[0] === data[i].ans
+                    ) {
                         score++;
                     }
                 });
@@ -664,6 +666,17 @@ app.get('/exercises/:id', getUserEmailFromToken, (req, res) => {
                     let tem = temp.exercise[x].partB;
                     temp.exercise[x].partB = ex.partB;
                     ex.partB = tem;
+                });
+            }
+            if (temp.type === 'B') {
+                temp.exercise.forEach(ex => {
+                    let ansLength = ex.partA.split('[[')[1].split(']]')[0]
+                        .length;
+                    let left = ex.partA.split('[[')[0];
+                    let right = ex.partA.split(']]')[1];
+
+                    ex.partA =
+                        left + '[[' + '*'.repeat(ansLength) + ']]' + right;
                 });
             }
             return res.status(200).json([temp]);
