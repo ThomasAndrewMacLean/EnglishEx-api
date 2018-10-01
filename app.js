@@ -474,19 +474,17 @@ app.post('/addexercise', getUserEmailFromToken, (req, res) => {
                 )
                 .then(r => res.status(200).json(r));
         }
-        if (exercise.type === 'A') {
-            exercises
-                .update(
-                    { _id: exercise.id },
-                    {
-                        title: exercise.title,
-                        type: exercise.type,
-                        exercise: exercise.exercise,
-                        delete: exercise.delete
-                    }
-                )
-                .then(r => res.status(200).json(r));
-        }
+        exercises
+            .update(
+                { _id: exercise.id },
+                {
+                    title: exercise.title,
+                    type: exercise.type,
+                    exercise: exercise.exercise,
+                    delete: exercise.delete
+                }
+            )
+            .then(r => res.status(200).json(r));
     } else {
         exercises.insert(exercise).then(r => res.status(200).json(r));
     }
