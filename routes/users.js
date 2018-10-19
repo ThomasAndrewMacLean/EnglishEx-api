@@ -79,18 +79,19 @@ module.exports = function(app) {
                         console.log(newUser);
 
                         users.insert(newUser).then(user => {
-                            sendMail(email, confirmString);
-                            jwt.sign(
-                                {
-                                    user
-                                },
-                                process.env.JWT_SECRET,
-                                (err, token) => {
-                                    res.status(200).json({
-                                        token
-                                    });
-                                }
-                            );
+                            sendMail(email, confirmString).then(() => {
+                                jwt.sign(
+                                    {
+                                        user
+                                    },
+                                    process.env.JWT_SECRET,
+                                    (err, token) => {
+                                        res.status(200).json({
+                                            token
+                                        });
+                                    }
+                                );
+                            });
                         });
                     });
                 }

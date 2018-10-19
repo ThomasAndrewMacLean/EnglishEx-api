@@ -1,9 +1,7 @@
-
 const express = require('express');
 var cookieParser = require('cookie-parser');
 const logger = require('volleyball');
 const bodyParser = require('body-parser');
-
 
 const cors = require('cors');
 
@@ -42,9 +40,8 @@ require('./routes/users')(app);
 //     });
 // });
 
-
 //if (process.env.NODE_ENV !== 'production') {
-app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
+//app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
 //}
 
-//module.exports = app;
+module.exports = app;

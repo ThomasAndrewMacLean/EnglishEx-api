@@ -1,34 +1,32 @@
-// TODO check gitbot way of sending mail directly
+const AWS = require('aws-sdk');
 
+const SES = new AWS.SES();
 
-const fetch = require('node-fetch');
-const mailOptions = {
-    from: 'noreply', // sender address??
-    to: 'thomas.maclean@gmail.com', // list of receivers
-    subject: 'Subject of your email', // Subject line
-    html: '<p>Your html here test</p>' // plain text body
+const sender = 'thomas.maclean@gmail.com';
+let msg = 'Please use this code: ccc to confirm your email adres';
+const subject = 'Please confirm your email address';
+
+const sendEmail = (recipient, code) => {
+    console.log('💌 sending mail...');
+
+    const email = {
+        Source: sender,
+        Destination: { ToAddresses: [recipient] },
+        Message: {
+            Subject: { Data: subject },
+            Body: { Text: { Data: msg.replace('ccc', code) } }
+        }
+    };
+    return SES.sendEmail(email)
+        .promise()
+        .then(() => {
+            console.log('EMAIL SENT');
+            return 'ok';
+        })
+        .catch(err => {
+            console.log('ERROR: EMAIL NOT SENT');
+            console.log(err);
+        });
 };
 
-
-function sendMail(mail, linky) {
-    //let data = fs.readFileSync('./public/mail.html', 'utf8');
-    mailOptions.html = linky; // data.replace('{{{link}}}', linky);
-    mailOptions.to = mail;
-    console.log('sending mail ✉️');
-
-    var body = {
-        mailBody: mailOptions.html,
-        subject: 'Please confirm your emailadress with this code',
-        mail
-    };
-    fetch('https://p0dmber89l.execute-api.eu-west-1.amazonaws.com/dev/mail', {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(res => res.json())
-        .then(json => console.log(json));
-}
-module.exports = sendMail;
+module.exports = sendEmail;

@@ -9,7 +9,7 @@
         "depp": "claudia create --handler lambda.handler --deploy-proxy-api --region eu-west-1  --profile claudiaJS",
         "createAndDeploy": "claudia create --region eu-west-1 --api-module app --profile claudiaJS",
         "upd": "claudia update --set-env-from-json .env.json --profile claudiaJS",
-        "log": "smoketail -f /aws/lambda/englishex---api -r eu-west-1"
+        "log": "smoketail -f /aws/lambda/englishex---api -r eu-west-1 --profile claudiaJS"
     },
     "repository": {
         "type": "git",
@@ -27,6 +27,7 @@
         "smoketail": "^0.1.1"
     },
     "dependencies": {
+        "aws-sdk": "^2.326.0",
         "aws-serverless-express": "^3.2.0",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.18.3",

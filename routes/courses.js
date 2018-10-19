@@ -1,6 +1,4 @@
-const {
-    getUserEmailFromToken
-} = require('./../security/getInfoFromToken');
+const { getUserEmailFromToken } = require('./../security/getInfoFromToken');
 const { db } = require('./../database/db');
 
 module.exports = function(app) {
@@ -46,6 +44,7 @@ module.exports = function(app) {
                     { _id: exercise.id },
                     {
                         title: exercise.title,
+                        info: exercise.info,
                         type: exercise.type,
                         exercise: exercise.exercise,
                         delete: exercise.delete
