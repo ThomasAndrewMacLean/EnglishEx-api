@@ -1,5 +1,6 @@
 const { getUserEmailFromToken } = require('./../security/getInfoFromToken');
 const { db } = require('./../database/db');
+let { removeAnswers } = require('./../helpers/removeAnswers');
 
 module.exports = function(app) {
     app.post('/addexercise', getUserEmailFromToken, (req, res) => {
@@ -118,7 +119,7 @@ module.exports = function(app) {
         const id = req.body.exId;
         const data = req.body.data;
         const user = req.token;
-        const total = data.length;
+        let total = data.length;
         let score = 0;
         let exercises = db.get('exercises');
         exercises
@@ -142,6 +143,16 @@ module.exports = function(app) {
                             data[i].ans
                         ) {
                             score++;
+                        }
+
+                        if (ex.partA.split('[[')[2]) {
+                            total++;
+                            if (
+                                ex.partA.split('[[')[2].split(']]')[0] ===
+                                data[i].ans1
+                            ) {
+                                score++;
+                            }
                         }
                     });
                 }
@@ -176,15 +187,9 @@ module.exports = function(app) {
                         ex.partB = tem;
                     });
                 }
-                if (temp.type === 'B') {
+                if (temp.type === 'B' || temp.type === 'C') {
                     temp.exercise.forEach(ex => {
-                        let ansLength = ex.partA.split('[[')[1].split(']]')[0]
-                            .length;
-                        let left = ex.partA.split('[[')[0];
-                        let right = ex.partA.split(']]')[1];
-
-                        ex.partA =
-                            left + '[[' + '*'.repeat(ansLength) + ']]' + right;
+                        ex.partA = removeAnswers(ex.partA, temp.type);
                     });
                 }
                 return res.status(200).json([temp]);
