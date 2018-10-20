@@ -156,6 +156,22 @@ module.exports = function(app) {
                         }
                     });
                 }
+                if (temp.type === 'C') {
+                    temp.exercise.forEach((ex, i) => {
+                        if (
+                            ex.partA.split('[[')[1].split(']]')[0] ===
+                            data[i].ans
+                        ) {
+                            score++;
+                        }
+                        //get point for correct place
+                        total++;
+                        let words = ex.partA.split('[[')[0].split(' ');
+                        if (words.length === data[i].ans1) {
+                            score++;
+                        }
+                    });
+                }
                 let userData = db.get(user);
                 //let scores = userData.get('scores');
                 userData.insert({
