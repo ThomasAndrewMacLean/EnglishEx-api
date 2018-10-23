@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 var randomString = require('random-string');
-const sendMail = require('./../mailer/mail');
+//const sendMail = require('./../mailer/mail');
 
 const {
     getUserEmailFromTokenForConfirm,
@@ -79,19 +79,21 @@ module.exports = function(app) {
                         console.log(newUser);
 
                         users.insert(newUser).then(user => {
-                            sendMail(email, confirmString).then(() => {
-                                jwt.sign(
-                                    {
-                                        user
-                                    },
-                                    process.env.JWT_SECRET,
-                                    (err, token) => {
-                                        res.status(200).json({
-                                            token
-                                        });
-                                    }
-                                );
-                            });
+                            console.log(user);
+
+                            // sendMail(email, confirmString).then(() => {
+                            //     jwt.sign(
+                            //         {
+                            //             user
+                            //         },
+                            //         process.env.JWT_SECRET,
+                            //         (err, token) => {
+                            //             res.status(200).json({
+                            //                 token
+                            //             });
+                            //         }
+                            //     );
+                            // });
                         });
                     });
                 }
@@ -180,9 +182,12 @@ module.exports = function(app) {
                 }
             });
     });
-    app.get('/getMyPoints', getUserEmailFromToken, (req, res) => {
-        //Raven.captureException('GETPOINTS');
-        const user = req.token;
+    app.post('/getMyPoints', getUserEmailFromToken, (req, res) => {
+        let user = req.token;
+        const { userId } = req.body;
+        if (req.isAdmin && userId) {
+            user = userId;
+        }
         let points = db.get(user);
         points.find({}).then(r => res.status(200).json(r));
     });

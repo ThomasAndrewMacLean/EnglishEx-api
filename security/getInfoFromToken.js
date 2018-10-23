@@ -64,10 +64,11 @@ function getUserEmailFromToken(req, res, next) {
                             }
                         })
                         .catch(() => {
+                            //add new user from google login
                             const newUser = {
                                 email,
                                 password: null,
-                                confirmed: true,
+                                confirmed: false,
                                 isAdmin: false
                             };
                             DB.users.insert(newUser);

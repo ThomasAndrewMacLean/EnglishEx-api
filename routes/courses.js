@@ -46,6 +46,7 @@ module.exports = function(app) {
                     {
                         title: exercise.title,
                         info: exercise.info,
+                        searchTag: exercise.searchTag,
                         type: exercise.type,
                         exercise: exercise.exercise,
                         delete: exercise.delete
