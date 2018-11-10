@@ -116,9 +116,23 @@ module.exports = function(app) {
         });
     });
 
+    app.post('/getAnswer', getUserEmailFromToken, (req, res) => {
+        const id = req.body.exId;
+        let exercises = db.get('exercises');
+        exercises
+            .find({
+                _id: id
+            })
+            .then(answer => {
+                //TODO: check if we are alowed to return the answer?
+                res.status(200).json(answer);
+            });
+    });
+
     app.post('/saveEx', getUserEmailFromToken, (req, res) => {
         const id = req.body.exId;
         const data = req.body.data;
+
         const user = req.token;
         let total = data.length;
         let score = 0;
