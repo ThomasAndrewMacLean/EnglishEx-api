@@ -124,8 +124,41 @@ module.exports = function(app) {
                 _id: id
             })
             .then(answer => {
-                //TODO: check if we are alowed to return the answer?
-                res.status(200).json(answer);
+                let temp = answer[0];
+
+                if (temp.type === 'C') {
+                    let ans = [];
+                    const data = req.body.data;
+                    let score;
+                    temp.exercise.forEach((ex, i) => {
+                        score = 0;
+                        if (
+                            ex.partA.split('[[')[1].split(']]')[0] ===
+                            data[i].ans
+                        ) {
+                            score++;
+                        }
+                        //get point for correct place
+                        let words = ex.partA.split('[[')[0].split(' ');
+                        if (words.length === data[i].ans1) {
+                            score++;
+                        }
+                        if (score === 2) {
+                            ans.push('');
+                        } else {
+                            ans.push(
+                                ex.partA
+                                    .toString()
+                                    .replace('[[', '')
+                                    .replace(']]', '')
+                            );
+                        }
+                    });
+                    res.status(200).json(ans);
+                } else {
+                    //TODO: check if we are alowed to return the answer?
+                    res.status(200).json(answer);
+                }
             });
     });
 
