@@ -223,6 +223,13 @@ module.exports = function(app) {
                         ex.partA = removeAnswers(ex.partA, temp.type);
                     });
                 }
+                if (temp.type === 'D') {
+                    temp.exercise.forEach(ex => {
+                        ex.button1 = removeAnswers(ex.button1, temp.type);
+                        ex.button2 = removeAnswers(ex.button2, temp.type);
+                        ex.button3 = removeAnswers(ex.button3, temp.type);
+                    });
+                }
                 return res.status(200).json([temp]);
             });
     });
