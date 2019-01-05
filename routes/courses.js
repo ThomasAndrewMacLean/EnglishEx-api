@@ -187,6 +187,31 @@ module.exports = function(app) {
                         }
                     });
                 }
+                if (temp.type === 'D') {
+                    temp.exercise.forEach((ex, i) => {
+                        if (
+                            ex.button1 &&
+                            ex.button1.includes('[') &&
+                            data[i] === removeAnswers(ex.button1, 'D')
+                        ) {
+                            score++;
+                        }
+                        if (
+                            ex.button2 &&
+                            ex.button2.includes('[') &&
+                            data[i] === removeAnswers(ex.button2, 'D')
+                        ) {
+                            score++;
+                        }
+                        if (
+                            ex.button3 &&
+                            ex.button3.includes('[') &&
+                            data[i] === removeAnswers(ex.button3, 'D')
+                        ) {
+                            score++;
+                        }
+                    });
+                }
                 let userData = db.get(user);
                 //let scores = userData.get('scores');
                 userData.insert({
