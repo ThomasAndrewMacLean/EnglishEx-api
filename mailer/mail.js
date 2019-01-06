@@ -14,7 +14,7 @@ const sendEmail = (recipient, code) => {
         Destination: { ToAddresses: [recipient] },
         Message: {
             Subject: { Data: subject },
-            Body: { Text: { Data: msg.replace('ccc', code) } }
+            Body: { Text: { Data: msg.('ccc', code) } }
         }
     };
     return SES.sendEmail(email)

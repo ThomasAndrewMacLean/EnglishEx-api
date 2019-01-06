@@ -11,8 +11,8 @@ const removeAnswers = (input, type) => {
     }
     if (type === 'D') {
         if (input) {
-            input = input.toString().replace('[', '');
-            input = input.toString().replace(']', '');
+            input = input.toString().replace('[[', '');
+            input = input.toString().replace(']]', '');
         }
 
         return input;
