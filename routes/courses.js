@@ -243,6 +243,13 @@ module.exports = function(app) {
                         ) {
                             score++;
                         }
+                        if (
+                            ex.button4 &&
+                            ex.button4.includes('[') &&
+                            data[i] === removeAnswers(ex.button4, 'D')
+                        ) {
+                            score++;
+                        }
                     });
                 }
                 let userData = db.get(user);
@@ -286,6 +293,7 @@ module.exports = function(app) {
                         ex.button1 = removeAnswers(ex.button1, temp.type);
                         ex.button2 = removeAnswers(ex.button2, temp.type);
                         ex.button3 = removeAnswers(ex.button3, temp.type);
+                        ex.button4 = removeAnswers(ex.button4, temp.type);
                     });
                 }
                 return res.status(200).json([temp]);
