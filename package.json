@@ -9,7 +9,8 @@
         "depp": "claudia create --handler lambda.handler --deploy-proxy-api --region eu-west-1  --profile claudiaJS",
         "createAndDeploy": "claudia create --region eu-west-1 --api-module app --profile claudiaJS",
         "upd": "claudia update --set-env-from-json .env.json --profile claudiaJS",
-        "log": "smoketail -f /aws/lambda/englishex---api -r eu-west-1"
+        "log": "smoketail -f /aws/lambda/englishex---api -r eu-west-1 --profile claudiaJS",
+        "test": "nodemon tape tests/*.js | tap-color"
     },
     "repository": {
         "type": "git",
@@ -24,9 +25,14 @@
     "devDependencies": {
         "claudia": "^5.1.0",
         "eslint": "^5.2.0",
-        "smoketail": "^0.1.1"
+        "riteway": "^3.0.0",
+        "smoketail": "^0.1.1",
+        "tap-color": "^1.1.0",
+        "tape-watch": "^2.3.0",
+        "tape-watcher": "^0.0.7"
     },
     "dependencies": {
+        "aws-sdk": "^2.326.0",
         "aws-serverless-express": "^3.2.0",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.18.3",
@@ -35,6 +41,7 @@
         "cors": "^2.8.4",
         "dotenv": "^6.0.0",
         "express": "^4.16.3",
+        "google-auth-library": "^2.0.0",
         "joi": "^13.4.0",
         "jsonwebtoken": "^8.3.0",
         "monk": "^6.0.6",
