@@ -17,6 +17,18 @@ const removeAnswers = (input, type) => {
 
         return input;
     }
+    if (type === 'DPartA') {
+        if (input) {
+            const x = input.toString().match(/\[\[(.+?)\]\]/g);
+            if (x) {
+                x.forEach(ans => {
+                    input = input.replace(ans, '______');
+                });
+            }
+        }
+
+        return input;
+    }
 };
 
 module.exports = { removeAnswers };

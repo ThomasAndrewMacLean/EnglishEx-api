@@ -26,4 +26,28 @@ describe('removeAnsers()', async assert => {
         actual: removeAnswers('helllo [[world]], its [[weekend]]', 'B'),
         expected: 'helllo [[*****]], its [[*******]]'
     });
+    assert({
+        given: 'type D input',
+        should: 'remove input',
+        actual: removeAnswers('[[world]]', 'D'),
+        expected: 'world'
+    });
+    assert({
+        given: 'type D input',
+        should: 'not remove input if not an correct answer',
+        actual: removeAnswers('world', 'D'),
+        expected: 'world'
+    });
+    assert({
+        given: 'type D partA',
+        should: 'replace answer with underscores',
+        actual: removeAnswers('world [[beautifull]] hellooo', 'DPartA'),
+        expected: 'world ______ hellooo'
+    });
+    assert({
+        given: 'type D partA, without answer',
+        should: 'return the partA',
+        actual: removeAnswers('world hellooo', 'DPartA'),
+        expected: 'world hellooo'
+    });
 });

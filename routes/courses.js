@@ -290,6 +290,7 @@ module.exports = function(app) {
                 }
                 if (temp.type === 'D') {
                     temp.exercise.forEach(ex => {
+                        ex.partA = removeAnswers(ex.partA, 'DPartA');
                         ex.button1 = removeAnswers(ex.button1, temp.type);
                         ex.button2 = removeAnswers(ex.button2, temp.type);
                         ex.button3 = removeAnswers(ex.button3, temp.type);
