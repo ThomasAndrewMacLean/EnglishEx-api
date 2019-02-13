@@ -300,4 +300,39 @@ module.exports = function(app) {
                 return res.status(200).json([temp]);
             });
     });
+
+    app.get('/getCategories', getUserEmailFromToken, (req, res) => {
+        try {
+            let categories = db.get('categories');
+            categories.find({}).then(r => {
+                res.status(200).json(r);
+            });
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    });
+
+    app.post('/addCategory', getUserEmailFromToken, (req, res) => {
+        if (!req.isAdmin) {
+            res.status(203).json({ message: 'only admin' });
+        }
+        let categories = db.get('categories');
+        categories.insert(req.body.category).then(r => res.status(200).json(r));
+    });
+
+    app.post('/editCategory', getUserEmailFromToken, (req, res) => {
+        if (!req.isAdmin) {
+            res.status(203).json({ message: 'only admin' });
+        }
+        let categories = db.get('categories');
+        let c = req.body.category;
+        categories
+            .update(
+                {
+                    _id: c._id
+                },
+                req.body.category
+            )
+            .then(r => res.status(200).json(r));
+    });
 };
