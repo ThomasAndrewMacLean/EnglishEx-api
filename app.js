@@ -25,6 +25,7 @@ require('./routes/admin')(app);
 require('./routes/courses')(app);
 require('./routes/general')(app);
 require('./routes/users')(app);
+require('./routes/opposites')(app);
 
 // app.post('/user', (req, res) => {
 //     const { email, password } = req.body;
@@ -40,8 +41,10 @@ require('./routes/users')(app);
 //     });
 // });
 
-//if (process.env.NODE_ENV !== 'production') {
-//app.listen(process.env.PORT || 5001, () => console.log('All is ok, sit back and relax!'));
-//}
+if (process.env.NODE_ENV === 'dev') {
+    app.listen(process.env.PORT || 5001, () =>
+        console.log('All is ok, sit back and relax!')
+    );
+}
 
 module.exports = app;
