@@ -304,7 +304,7 @@ module.exports = function(app) {
     app.get('/getCategories', getUserEmailFromToken, (req, res) => {
         try {
             let categories = db.get('categories');
-            categories.find({}).then(r => {
+            categories.find({ deleted: { $ne: true } }).then(r => {
                 res.status(200).json(r);
             });
         } catch (error) {
@@ -332,6 +332,23 @@ module.exports = function(app) {
                     _id: c._id
                 },
                 req.body.category
+            )
+            .then(r => res.status(200).json(r));
+    });
+
+    app.post('/deleteCategory', getUserEmailFromToken, (req, res) => {
+        if (!req.isAdmin) {
+            res.status(203).json({ message: 'only admin' });
+        }
+        let categories = db.get('categories');
+        let categoryToBeDeleted = req.body.category;
+        categoryToBeDeleted.deleted = true;
+        categories
+            .update(
+                {
+                    _id: categoryToBeDeleted._id
+                },
+                categoryToBeDeleted
             )
             .then(r => res.status(200).json(r));
     });
